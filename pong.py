@@ -1,4 +1,5 @@
 from math import cos, sin, radians
+import random
 
 import pygame
 import sys
@@ -15,16 +16,14 @@ def score_display(score_left, score_right):
 
 def do_it():
     # Game vars
-    game_active = True
+    game_active = False
     score_left = 0
     score_right = 0
-    vel = 10
-    ball_x_velocity = vel
-    ball_y_velocity = vel
-    angle = 80
+    vel = 15
+    angle = 90
     bx = 600
     by = 400
-
+    max_bounce = 60
 
     while True:
         for event in pygame.event.get():
@@ -49,10 +48,11 @@ def do_it():
                 angle = 180 - angle
 
             if ball_rect.colliderect(paddle_right_rect):
+                angle = 90 - (((ball_rect.centery - paddle_right_rect.centery) / 75.0) * max_bounce)
                 angle = -angle
 
             if ball_rect.colliderect(paddle_left_rect):
-                angle = -angle
+                angle = 90 - (((ball_rect.centery - paddle_left_rect.centery) / 75.0) * max_bounce)
 
             bx = bx + vel * sin(radians(angle))
             by = by + vel * cos(radians(angle))
@@ -78,6 +78,12 @@ def do_it():
             ball_rect.center = (600, 400)
             bx = 600
             by = 400
+            vel = 15
+            if random.randint(0, 10) < 5:
+                angle = 90
+            else:
+                angle = -90
+
             paddle_left_rect.centery = 400
             paddle_right_rect.centery = 400
             game_active = True
@@ -93,7 +99,6 @@ screen = pygame.display.set_mode((1200, 800))
 clock = pygame.time.Clock()
 game_font = pygame.font.Font('04B_19__.TTF', 100)
 
-
 # Paddles
 paddle_left = pygame.image.load('paddle.png').convert_alpha()
 paddle_left_rect = paddle_left.get_rect(center=(50, 400))
@@ -105,7 +110,6 @@ bg_surface = pygame.image.load('background.png')
 # Ball
 ball = pygame.image.load('Screenshot_2.png').convert_alpha()
 ball_rect = ball.get_rect(center=(600, 400))
-
 
 INCREASEVELOCITY = pygame.USEREVENT
 pygame.time.set_timer(INCREASEVELOCITY, 1000)
