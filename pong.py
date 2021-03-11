@@ -24,6 +24,10 @@ def do_it():
     bx = 600
     by = 400
     max_bounce = 60
+    right_auto = True
+    move1 = 1
+    move2 = 2
+    step = 5
 
     while True:
         for event in pygame.event.get():
@@ -34,15 +38,30 @@ def do_it():
         if game_active:
             # Movement
             keys = pygame.key.get_pressed()
-            if keys[pygame.K_UP]:
-                paddle_right_rect.centery -= 20
-            if keys[pygame.K_DOWN]:
-                paddle_right_rect.centery += 20
+            if right_auto:
+                diff = ball_rect.centery - paddle_right_rect.centery
+                if abs(diff) > 0:
+                    paddle_right_rect.centery += (1, -1)[diff < 0] * int(abs(diff)/7)
+            else:
+                if keys[pygame.K_UP]:
+                    paddle_right_rect.centery -= step * move2
+                    move2 = 2
+                else:
+                    if keys[pygame.K_DOWN]:
+                        paddle_right_rect.centery += step * move2
+                        move2 = 2
+                    else:
+                        move2 = 1
+            print(move1)
             if keys[pygame.K_w]:
-                paddle_left_rect.centery -= 20
-            if keys[pygame.K_s]:
-                paddle_left_rect.centery += 20
-
+                paddle_left_rect.centery -= step * move1
+                move1 = 2
+            else:
+                if keys[pygame.K_s]:
+                    move1 = 2
+                    paddle_left_rect.centery += step * move1
+                else:
+                    move1 = 1
             # Ball Movement
             if ball_rect.bottom >= 800 or ball_rect.top <= 0:
                 angle = 180 - angle
